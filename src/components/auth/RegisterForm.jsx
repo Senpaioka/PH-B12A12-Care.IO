@@ -1,8 +1,14 @@
 "use client";
 
 import { useForm } from "react-hook-form";
+import {createUser} from "@/actions/server/userManager";
+import Swal from 'sweetalert2';
+import { useRouter } from 'next/navigation';
 
 export default function RegisterPage() {
+
+  const router = useRouter();
+
   const {
     register,
     handleSubmit,
@@ -10,12 +16,29 @@ export default function RegisterPage() {
     reset,
   } = useForm();
 
+  
   const onSubmit = async (data) => {
     try {
-      console.log("Registration data:", data);
+      const result = await createUser(data);
 
-      // TODO: call your auth / API logic here
-      // await registerUser(data);
+      if (result.success) {
+        Swal.fire({
+          position: "top-end",
+          icon: "success",
+          title: "Registration Successful.",
+          showConfirmButton: false,
+          timer: 1500
+        });
+        router.push('/login');
+      }
+      else {
+        Swal.fire({
+          icon: "error",
+          title: "Failed!",
+          text: result.error.message,
+        });
+        router.push('/login');
+      }
 
       reset();
     } catch (error) {
@@ -23,6 +46,7 @@ export default function RegisterPage() {
     }
   };
 
+  
   const onGoogle = async() => {
     console.log('ok');
   }
@@ -94,9 +118,7 @@ export default function RegisterPage() {
                 type="url"
                 placeholder="https://example.com/photo.jpg"
                 className="input input-bordered w-full"
-                {...register("photoURL", {
-                  required: "Photo URL is required",
-                })}
+                {...register("photoURL")}
               />
               {errors.photoURL && (
                 <p className="text-error text-sm mt-1">

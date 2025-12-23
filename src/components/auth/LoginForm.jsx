@@ -1,8 +1,18 @@
 "use client";
 
 import { useForm } from "react-hook-form";
+import { signIn } from "next-auth/react";
+import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
+import Swal from 'sweetalert2'
+
 
 function LoginPage() {
+
+  const params = useSearchParams();
+  const router = useRouter();
+  const callback = params.get("callbackUrl") || "/";
+
   const {
     register,
     handleSubmit,
@@ -12,12 +22,32 @@ function LoginPage() {
 
   const onSubmit = async (data) => {
     try {
-      console.log("Login data:", data);
+      const result = await signIn("credentials", {
+        email: data.email,
+        password: data.password,
+        redirect: false,
+        callbackUrl: callback,
+      });
 
-      // TODO: call your login logic
-      // await loginUser(data.email, data.password);
+      if (!result.ok) {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Email or Password not matched! Try again.",
+        });
+      } else {
+        Swal.fire({
+          position: "top-end",
+          icon: "success",
+          title: "Welcome Back!!",
+          showConfirmButton: false,
+          timer: 1500
+        });
+        router.push(callback);
+      }
 
       reset();
+
     } catch (error) {
       console.error(error);
     }
