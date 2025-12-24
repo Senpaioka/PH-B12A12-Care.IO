@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
-
+import Image from 'next/image'
 
 function Navbar() {
 
@@ -48,7 +48,28 @@ function Navbar() {
                         <>
                         <div className="space-x-3">
                             <Link href={`/caregiver`} className="btn btn-primary btn-outline">Be a caregiver</Link>
-                            <button onClick={() => signOut()} className="btn btn-accent">Logout</button>
+                            {/* <button onClick={() => signOut()} className="btn btn-accent">Logout</button> */}
+
+                            <div className="dropdown dropdown-end">
+                                <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
+                                    <div className="w-12 rounded-full">
+                                    <Image src={session?.user?.image || "https://i.ibb.co.com/G35j9bHm/dp.jpg"} alt={`user_photo`} width={80} height={80}></Image>
+                                    </div>
+                                </div>
+                                <ul
+                                    tabIndex="-1"
+                                    className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow space-y-3">
+                                    <li>
+                                    <a className="justify-between">
+                                        Profile
+                                        <span className="badge">New</span>
+                                    </a>
+                                    </li>
+                                    <li><a>Settings</a></li>
+                                    <li><button onClick={() => signOut()} className="btn bg-red-500 text-white">Logout</button></li>
+                                </ul>
+                            </div>
+
                         </div>
                         </>
                     ) : (
