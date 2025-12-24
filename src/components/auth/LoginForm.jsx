@@ -5,13 +5,14 @@ import { signIn } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import Swal from 'sweetalert2'
+import { useEffect } from "react";
 
 
 function LoginPage() {
 
-  const params = useSearchParams();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/";
   const router = useRouter();
-  const callback = params.get("callbackUrl") || "/";
 
   const {
     register,
@@ -26,7 +27,7 @@ function LoginPage() {
         email: data.email,
         password: data.password,
         redirect: false,
-        callbackUrl: callback,
+        callbackUrl: callbackUrl,
       });
 
       if (!result.ok) {
@@ -43,7 +44,7 @@ function LoginPage() {
           showConfirmButton: false,
           timer: 1500
         });
-        router.push(callback);
+        router.push(callbackUrl);
       }
 
       reset();
@@ -53,9 +54,10 @@ function LoginPage() {
     }
   };
 
-  const onGoogle = async () => {
-    console.log("Google login");
-  };
+  const onGoogleLogin = async() => {
+    const result = await signIn("google", {callbackUrl})
+  }
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-base-100 px-4">
@@ -127,7 +129,7 @@ function LoginPage() {
 
           {/* Google Login */}
           <button
-            onClick={onGoogle}
+            onClick={onGoogleLogin}
             className="btn bg-white text-black border-[#e5e5e5]"
           >
             <svg

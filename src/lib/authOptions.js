@@ -1,6 +1,6 @@
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { loginUser } from "@/actions/server/userManager";
+import { loginUser, saveGoogleUsers } from "@/actions/server/userManager";
 
 
 const authOptions = {
@@ -46,19 +46,33 @@ const authOptions = {
     })
   ],
 
+
   session: {
     strategy: "jwt",
   },
 
+
   callbacks: {
 
     async jwt({ token, user, account }) {
-      // Runs on initial sign-in
-      if (user) {
-        token.id = user.id;
-        token.role = user.role ?? "user";
-        token.provider = account?.provider;
+      // GOOGLE LOGIN
+      if (account?.provider === "google" && user) {
+        const result = await saveGoogleUsers(user);
+
+        if(result) {
+          token.id = result.data.id;
+          token.role = result.data.role;
+          token.provider = "google";
+        }
       }
+
+      // CREDENTIALS LOGIN
+      if (account?.provider === "credentials" && user) {
+        token.id = user.id;
+        token.role = user.role;
+        token.provider = "credentials";
+      }
+
       return token;
     },
 
@@ -71,6 +85,11 @@ const authOptions = {
       }
       return session;
     }
+  },
+
+  // controls where NextAuth redirects users when authentication is required or fails. 
+  pages: {
+    signIn: "/login",
   },
 }
 
