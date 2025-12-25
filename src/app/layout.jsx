@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 
 export const metadata = {
   title: "care.io",
-  description: "World class care services at your door.",
+  description: "Baby Sitting & Elderly Care Service Platform",
 };
 
 export default function RootLayout({ children }) {

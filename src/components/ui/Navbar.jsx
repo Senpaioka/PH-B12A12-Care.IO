@@ -47,7 +47,7 @@ function Navbar() {
                     status === "authenticated" ? (
                         <>
                         <div className="space-x-3">
-                            <Link href={`/caregiver`} className="btn btn-primary btn-outline">Be a caregiver</Link>
+                            <Link href="/caregiver" className="btn btn-primary btn-outline">Be a caregiver</Link>
                             {/* <button onClick={() => signOut()} className="btn btn-accent">Logout</button> */}
 
                             <div className="dropdown dropdown-end">
