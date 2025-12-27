@@ -1,6 +1,7 @@
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { loginUser, saveGoogleUsers } from "@/actions/server/userManager";
+import { loginUser } from "@/actions/server/userManager";
+import { dbConnect, collections } from "@/db/dbConnect";
 
 
 const authOptions = {
@@ -54,25 +55,32 @@ const authOptions = {
 
   callbacks: {
 
-    async jwt({ token, user, account }) {
-      // GOOGLE LOGIN
-      if (account?.provider === "google" && user) {
-        const result = await saveGoogleUsers(user);
+    async signIn({ user, account }) {
 
-        if(result) {
-          token.id = result.data.id;
-          token.role = result.data.role;
-          token.provider = "google";
-        }
+      if (account?.provider === "google") {
+        const userCollection = dbConnect(collections.USERS);
+
+        await userCollection.updateOne(
+          { email: user.email.toLowerCase() },
+          {
+            $set: {
+              lastLogin: new Date(),
+              updatedAt: new Date(),
+            },
+          }
+        );
       }
 
-      // CREDENTIALS LOGIN
-      if (account?.provider === "credentials" && user) {
+      return true;
+    },
+    
+    async jwt({ token, user, account }) {
+      if (user) {
         token.id = user.id;
         token.role = user.role;
-        token.provider = "credentials";
+        token.provider = account?.provider;
       }
-
+    
       return token;
     },
 

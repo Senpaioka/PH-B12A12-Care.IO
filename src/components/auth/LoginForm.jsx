@@ -5,7 +5,6 @@ import { signIn } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import Swal from 'sweetalert2'
-import { useEffect } from "react";
 
 
 function LoginPage() {
@@ -54,9 +53,19 @@ function LoginPage() {
     }
   };
 
-  const onGoogleLogin = async() => {
-    const result = await signIn("google", {callbackUrl})
+  const onGoogleLogin = async () => {
+  try {
+    await signIn("google", {
+      callbackUrl,
+    });
+
+  } catch (error) {
+    console.error("Google login failed", error);
   }
+};
+
+
+
 
 
   return (

@@ -3,67 +3,6 @@
 import bcrypt from "bcryptjs";
 import { dbConnect, collections } from "@/db/dbConnect";
 
-
-export const createUser = async (userData) => {
-    if (!userData?.email || !userData?.password) {
-      throw new Error("Email and password are required");
-    }
-  
-    // Check if user already exists
-    const existingUser = await getUser(userData.email);
-
-    if (existingUser) {
-    return {
-        success: false,
-        error: {
-            code: "USER_EXISTS",
-            message: "An account with this email already exists",
-        },
-        };
-    }
-  
-    // Hash password
-    const hashedPassword = await bcrypt.hash(userData.password, 10);
-  
-    // Prepare user document
-    const newUser = {
-      username: userData.username?.trim(),
-      email: userData.email.toLowerCase(),
-      photoURL: userData.photoURL || null,
-      password: hashedPassword,
-  
-      role: "user",
-      status: "active",
-      provider: "credentials",
-  
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      lastLogin: null,
-    };
-  
-    // Save user to database
-    const userCollection = dbConnect(collections.USERS);
-    const result = await userCollection.insertOne(newUser);
-  
-    return {
-        success: true,
-        data: {
-          id: result.insertedId.toString(),
-          email: newUser.email,
-        },
-    }
-  };
-
-
-
-  export const getUser = async (email) => {
-    const userCollection = dbConnect(collections.USERS);
-    const user = await userCollection.findOne({ email });
-    return user;
-}
-
-
-
 export const loginUser = async (payload) => {
     const { email, password } = payload || {};
   
@@ -129,7 +68,7 @@ export const loginUser = async (payload) => {
   };
   
 
-  export const saveGoogleUsers = async (googleUser) => {
+  export const saveGoogleUsers = async (googleUser, ip="unknown") => {
     if (!googleUser?.email) {
       return {
         success: false,
@@ -154,6 +93,12 @@ export const loginUser = async (payload) => {
           role: "user",
           status: "active",
           provider: "google",
+          
+          location: {
+            ip: ip,
+            city: null,
+            country: null,
+          },
           createdAt: now,
         },
         $set: {

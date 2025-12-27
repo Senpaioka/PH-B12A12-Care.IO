@@ -53,7 +53,13 @@ function Navbar() {
                             <div className="dropdown dropdown-end">
                                 <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
                                     <div className="w-12 rounded-full">
-                                    <Image src={session?.user?.image || "https://i.ibb.co.com/G35j9bHm/dp.jpg"} alt={`user_photo`} width={80} height={80}></Image>
+                                        {
+                                            session.user?.image ? 
+                                            <Image src={session.user.image} alt={`user_photo`} width={80} height={80}></Image>
+                                            :
+                                            <Image src={"https://i.ibb.co.com/G35j9bHm/dp.jpg"} alt={`user_photo_default`} width={80} height={80}></Image>
+                                        }
+                                    {/* <Image src={session?.user?.image || "https://i.ibb.co.com/G35j9bHm/dp.jpg"} alt={`user_photo`} width={80} height={80}></Image> */}
                                     </div>
                                 </div>
                                 <ul
