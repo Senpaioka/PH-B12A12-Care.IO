@@ -10,6 +10,7 @@ import Swal from 'sweetalert2'
 function LoginPage() {
 
   const searchParams = useSearchParams();
+  const error = searchParams.get("error");
   const callbackUrl = searchParams.get("callbackUrl") || "/";
   const router = useRouter();
 
@@ -53,19 +54,35 @@ function LoginPage() {
     }
   };
 
-  const onGoogleLogin = async () => {
-  try {
-    await signIn("google", {
-      callbackUrl,
-    });
 
-  } catch (error) {
-    console.error("Google login failed", error);
-  }
-};
+    const onGoogleLogin = async () => {
+      try {
+        const result = await signIn("google", {
+          callbackUrl,
+          redirect: false, // REQUIRED
+        });
 
+        if (result?.error) {
+          if (result.error === "AccessDenied") {
+            Swal.fire({
+              icon: "error",
+              title: "Not Registered",
+              text: "Please register before logging in.",
+            });
+          }
+          return;
+        }
 
+      } catch (err) {
+        console.error("Google login failed", err);
 
+        Swal.fire({
+          icon: "error",
+          title: "Login failed",
+          text: "Something went wrong. Please try again.",
+        });
+      }
+    };
 
 
   return (

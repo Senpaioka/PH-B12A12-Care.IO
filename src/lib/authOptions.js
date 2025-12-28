@@ -60,6 +60,18 @@ const authOptions = {
       if (account?.provider === "google") {
         const userCollection = dbConnect(collections.USERS);
 
+        // Check if user already exists
+        const existingUser = await userCollection.findOne({
+          email: user.email.toLowerCase(),
+        });
+
+        // Block login if user not registered
+        if (!existingUser) {
+          console.log("Login blocked: Google user not registered");
+          return false; // prevents login
+        }
+
+        // ✅ Update last login if exists
         await userCollection.updateOne(
           { email: user.email.toLowerCase() },
           {
@@ -71,7 +83,7 @@ const authOptions = {
         );
       }
 
-      return true;
+      return true; // allow login
     },
     
     async jwt({ token, user, account }) {
@@ -98,6 +110,7 @@ const authOptions = {
   // controls where NextAuth redirects users when authentication is required or fails. 
   pages: {
     signIn: "/login",
+    error: "/register",
   },
 }
 
