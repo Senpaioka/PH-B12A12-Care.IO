@@ -2,7 +2,8 @@
 
 import { useForm } from "react-hook-form";
 import { useState } from "react";
-import { caregiverApplicationData } from "@/actions/server/caregiverManager";
+import { useSession } from "next-auth/react";
+import Swal from 'sweetalert2'
 
 
 const SKILLS = [
@@ -25,6 +26,8 @@ const ROLES = [
 
 export default function CaregiverCandidateForm() {
   const [step, setStep] = useState(1);
+
+  const { data: session } = useSession();
 
   const {
     register,
@@ -49,10 +52,60 @@ export default function CaregiverCandidateForm() {
     if (valid) setStep(2);
   };
 
-  const onSubmit = async(data) => {
-    const result = await caregiverApplicationData(data);
-    // send to server
+
+  const onSubmit = async (data) => {
+    try {
+      const res = await fetch("/api/professionals", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      const result = await res.json();
+
+      // SUCCESS
+      if (res.ok && result.success) {
+        Swal.fire({
+          icon: "success",
+          title: "Submitted Successfully",
+          text: "Your professional profile has been saved.",
+          timer: 1800,
+          showConfirmButton: false,
+        });
+
+        reset();
+        return;
+      }
+
+      // ALREADY EXISTS (409)
+      if (res.status === 409) {
+        Swal.fire({
+          icon: "info",
+          title: "Already Registered",
+          text: result.message || "You are already registered as a caregiver.",
+        });
+        return;
+      }
+
+      // OTHER API ERRORS
+      Swal.fire({
+        icon: "error",
+        title: "Submission Failed",
+        text: result.message || "Something went wrong. Please try again.",
+      });
+
+    } catch (error) {
+      console.error(error);
+
+      // NETWORK / UNEXPECTED ERROR
+      Swal.fire({
+        icon: "error",
+        title: "Network Error",
+        text: "Unable to submit the form. Please check your connection.",
+      });
+    }
   };
+
 
   return (
     <div className="max-w-3xl mx-auto p-6">
@@ -164,10 +217,13 @@ export default function CaregiverCandidateForm() {
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
                     <label className="label">Email</label>
+
                     <input
                       type="email"
                       className="input input-bordered w-full"
-                      {...register("email", { required: true })}
+                      value={session?.user?.email || ""}
+                      readOnly
+                      {...register("email")}
                     />
                   </div>
 
