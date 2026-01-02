@@ -66,12 +66,16 @@ function Navbar() {
                                     tabIndex="-1"
                                     className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow space-y-3">
                                     <li>
-                                    <a className="justify-between">
-                                        Profile
-                                        <span className="badge">New</span>
-                                    </a>
+                                    <Link
+                                    href={`/profile?email=${session.user.email}`}
+                                    className="justify-between"
+                                    >
+                                    Profile
+                                    <span className="badge">New</span>
+                                    </Link>
                                     </li>
-                                    <li><a>Settings</a></li>
+
+                                    <li><Link href={`/dashboard`}>Dashboard</Link></li>
                                     <li><button onClick={() => signOut()} className="btn bg-red-500 text-white">Logout</button></li>
                                 </ul>
                             </div>

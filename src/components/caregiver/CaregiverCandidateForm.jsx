@@ -3,7 +3,8 @@
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { useSession } from "next-auth/react";
-import Swal from 'sweetalert2'
+import { useRouter } from "next/navigation";
+import Swal from 'sweetalert2';
 
 
 const SKILLS = [
@@ -28,6 +29,7 @@ export default function CaregiverCandidateForm() {
   const [step, setStep] = useState(1);
 
   const { data: session } = useSession();
+  const router = useRouter();
 
   const {
     register,
@@ -74,6 +76,7 @@ export default function CaregiverCandidateForm() {
         });
 
         reset();
+        router.push('/profile');
         return;
       }
 
