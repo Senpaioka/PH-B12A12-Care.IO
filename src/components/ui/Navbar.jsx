@@ -46,9 +46,14 @@ function Navbar() {
                 {
                     status === "authenticated" ? (
                         <>
-                        <div className="space-x-3">
-                            <Link href="/caregiver" className="btn btn-primary btn-outline">Be a caregiver</Link>
-                            {/* <button onClick={() => signOut()} className="btn btn-accent">Logout</button> */}
+                        <div className="space-x-3 flex items-center justify-center">
+
+                            <h3 className="text-base font-bold text-gray-500">@{session.user?.name}</h3>
+                            {
+                                !session.user?.role === 'caregiver' && (
+                                    <Link href="/caregiver" className="btn btn-primary btn-outline">Be a caregiver</Link>
+                                )
+                            }
 
                             <div className="dropdown dropdown-end">
                                 <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
@@ -59,7 +64,6 @@ function Navbar() {
                                             :
                                             <Image src={"https://i.ibb.co.com/G35j9bHm/dp.jpg"} alt={`user_photo_default`} width={80} height={80}></Image>
                                         }
-                                    {/* <Image src={session?.user?.image || "https://i.ibb.co.com/G35j9bHm/dp.jpg"} alt={`user_photo`} width={80} height={80}></Image> */}
                                     </div>
                                 </div>
                                 <ul

@@ -1,7 +1,7 @@
-function Dashboard() {
+export default function Dashboard() {
+  return (
     <div>
-        <p>Dashboard</p>
+      <h1 className="text-2xl font-bold">Welcome to Dashboard</h1>
     </div>
+  );
 }
-
-export default Dashboard;
