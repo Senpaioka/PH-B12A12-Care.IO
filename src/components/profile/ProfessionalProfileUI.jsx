@@ -1,7 +1,15 @@
+"use client";
+
 import Image from "next/image";
+import { useSession } from "next-auth/react";
 
 
 export default function ProfessionalProfileUI({ profile }) {
+
+    const { data: session } = useSession();
+    const isOwnProfile = session?.user?.email === profile.email;
+    const isAvailable = !!profile.available;  // converts to true/false
+    const isApproved = !!profile.approved;
   
     return (
     <div className="max-w-7xl mx-auto px-4 py-8">
@@ -30,6 +38,20 @@ export default function ProfessionalProfileUI({ profile }) {
             >
               {profile.approved ? "Approved" : "Pending Approval"}
             </span>
+
+            {/* Hire button */}
+            {!isOwnProfile && (
+              <button
+                disabled={!(isAvailable && isApproved)}
+                className={`ml-auto rounded-lg px-5 py-2 text-white ${
+                  isAvailable && isApproved
+                    ? "bg-primary cursor-pointer"
+                    : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                }`}
+              >
+                {isAvailable && isApproved ? "Hire" : isApproved ? "Hired" : "Not Approved"}
+              </button>
+            )}
           </div>
 
           <p className="text-gray-500 mt-1">

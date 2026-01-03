@@ -55,6 +55,7 @@ export async function POST(req) {
     };
 
     professional.approved = false;
+    professional.available = true;
 
     // check if user already exists
     const existingUser = await professionalsCollection.findOne({

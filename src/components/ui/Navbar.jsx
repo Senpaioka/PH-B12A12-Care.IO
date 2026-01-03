@@ -50,12 +50,15 @@ function Navbar() {
                         <>
                         <div className="space-x-3 flex items-center justify-center">
 
+                           
+                            {/* Show button if user is NOT a caregiver */}
+                            {session.user?.role !== 'caregiver' && (
+                                <Link href="/caregiver" className="btn btn-primary btn-outline">
+                                Be a caregiver
+                                </Link>
+                            )}
+
                             <h3 className="text-base font-bold text-gray-500">@{session.user?.name}</h3>
-                            {
-                                !session.user?.role === 'caregiver' && (
-                                    <Link href="/caregiver" className="btn btn-primary btn-outline">Be a caregiver</Link>
-                                )
-                            }
 
                             <div className="dropdown dropdown-end">
                                 <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
