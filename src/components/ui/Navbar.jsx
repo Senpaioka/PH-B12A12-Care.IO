@@ -11,6 +11,8 @@ function Navbar() {
     const menuLinks = (
         <>
             <li><Link href={`/`}>Home</Link></li>
+            <li><Link href={`/find`}>Find Caregivers</Link></li>
+            <li><Link href={`/notification`}>Notifications</Link></li>
         </>
     );
 
