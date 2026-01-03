@@ -1,15 +1,50 @@
 "use client";
 
 import Image from "next/image";
-import { useSession } from "next-auth/react";
+import { useState } from "react";
+import Swal from "sweetalert2";
 
+export default function ProfessionalProfileUI({ profile, currentUserEmail }) {
+  const [isAvailable, setIsAvailable] = useState(!!profile.available);
+  const isApproved = !!profile.approved;
+  const isOwnProfile = profile.email === currentUserEmail;
 
-export default function ProfessionalProfileUI({ profile }) {
+  const handleHire = async () => {
+    try {
+      const res = await fetch("/api/hire", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: profile.email }), // identify professional
+      });
 
-    const { data: session } = useSession();
-    const isOwnProfile = session?.user?.email === profile.email;
-    const isAvailable = !!profile.available;  // converts to true/false
-    const isApproved = !!profile.approved;
+      const data = await res.json();
+
+      if (data.success) {
+        setIsAvailable(false);
+
+        Swal.fire({
+          icon: "success",
+          title: "Request Sent!",
+          text: `${profile.fullName} has been notified.`,
+          timer: 1500,
+          showConfirmButton: false,
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Failed",
+          text: data.message,
+        });
+      }
+    } catch (err) {
+      console.error(err);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Something went wrong. Try again later.",
+      });
+    }
+  };
   
     return (
     <div className="max-w-7xl mx-auto px-4 py-8">
@@ -42,6 +77,7 @@ export default function ProfessionalProfileUI({ profile }) {
             {/* Hire button */}
             {!isOwnProfile && (
               <button
+                onClick={handleHire}
                 disabled={!(isAvailable && isApproved)}
                 className={`ml-auto rounded-lg px-5 py-2 text-white ${
                   isAvailable && isApproved

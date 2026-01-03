@@ -7,6 +7,8 @@ const db_name = process.env.DB_NAME;
 const collections = {
     USERS: 'users',
     PROFESSIONALS: 'caregivers',
+    HIRES: 'hires',
+    PAYMENTS: 'payments',
 }
 
 

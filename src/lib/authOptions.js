@@ -55,23 +55,56 @@ const authOptions = {
 
   callbacks: {
 
-    async signIn({ user, account }) {
+    // async signIn({ user, account }) {
 
+    //   if (account?.provider === "google") {
+    //     const userCollection = dbConnect(collections.USERS);
+
+    //     // Check if user already exists
+    //     const existingUser = await userCollection.findOne({
+    //       email: user.email.toLowerCase(),
+    //     });
+
+    //     // Block login if user not registered
+    //     if (!existingUser) {
+    //       console.log("Login blocked: Google user not registered");
+    //       return false; // prevents login
+    //     }
+
+    //     // ✅ Update last login if exists
+    //     await userCollection.updateOne(
+    //       { email: user.email.toLowerCase() },
+    //       {
+    //         $set: {
+    //           lastLogin: new Date(),
+    //           updatedAt: new Date(),
+    //         },
+    //       }
+    //     );
+    //   }
+
+    //   return true; // allow login
+    // },
+
+
+    async signIn({ user, account }) {
       if (account?.provider === "google") {
         const userCollection = dbConnect(collections.USERS);
 
-        // Check if user already exists
         const existingUser = await userCollection.findOne({
           email: user.email.toLowerCase(),
         });
 
-        // Block login if user not registered
         if (!existingUser) {
           console.log("Login blocked: Google user not registered");
-          return false; // prevents login
+          return false;
         }
 
-        // ✅ Update last login if exists
+        // ATTACH DB DATA TO USER OBJECT
+        user.id = existingUser._id.toString();
+        user.role = existingUser.role;
+        user.provider = "google";
+
         await userCollection.updateOne(
           { email: user.email.toLowerCase() },
           {
@@ -83,8 +116,9 @@ const authOptions = {
         );
       }
 
-      return true; // allow login
+      return true;
     },
+
     
     async jwt({ token, user, account }) {
       if (user) {

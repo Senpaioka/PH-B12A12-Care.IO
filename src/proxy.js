@@ -26,8 +26,8 @@
 import { NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 
-const privateRoutes = ["/profile", "/dashboard"];
-const caregiverRoutes = ["/notification"];
+const privateRoutes = ["/profile", "/dashboard", "/notification"];
+// const caregiverRoutes = ["/notification"];
 const adminRoutes = ["/dashboard/applicant", "/dashboard/users"];
 const authRoutes = ["/login", "/register"];
 
@@ -82,11 +82,11 @@ export async function proxy(req) {
   /* -------------------------------------------------
      5. Caregiver-only routes
   -------------------------------------------------- */
-  if (caregiverRoutes.some(route => pathname.startsWith(route))) {
-    if (!isLoggedIn || !["caregiver", "admin"].includes(role)) {
-      return NextResponse.redirect(new URL("/unauthorized", req.url));
-    }
-  }
+  // if (caregiverRoutes.some(route => pathname.startsWith(route))) {
+  //   if (!isLoggedIn || !["caregiver", "admin"].includes(role)) {
+  //     return NextResponse.redirect(new URL("/unauthorized", req.url));
+  //   }
+  // }
 
 
   /* -------------------------------------------------
