@@ -1,28 +1,3 @@
-// import { NextResponse } from 'next/server'
- 
-// const privateRoutes = ["/profile", "/dashboard"]
-// const caregiverRoutes = ["/notification"]
-// const adminRoutes = ["/dashboard/applicant", "/dashboard/users"]
-// const authRoutes = ["/login", "/register"]
-
-// export async function proxy(req) {
-
-//     // getting user ip
-//     const ip =
-//     req.headers.get("x-forwarded-for")?.split(",")[0] ||
-//     req.headers.get("x-real-ip") ||
-//     "unknown";
-
-//     const response = NextResponse.next();
-//     response.headers.set("x-user-ip", ip);
-//     return response;
-// }
- 
-// export const config = {
-//     matcher: '/api/auth/:path*',
-//   };
-
-
 import { NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 

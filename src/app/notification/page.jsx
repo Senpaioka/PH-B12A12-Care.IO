@@ -13,43 +13,31 @@ export default function NotificationPage() {
   const userEmail = session?.user?.email;
   const userRole = session?.user?.role;
 
-useEffect(() => {
-  if (status === "authenticated") {
-    fetchRequests();
-  }
-}, [status]);
-
-
-const fetchRequests = async () => {
-  setLoading(true);
-  try {
-    const res = await fetch("/api/notification");
-    const data = await res.json();
-    const email = session.user.email.toLowerCase().trim();
-    const role = session.user.role;
-
-    let filtered = [];
-
-    if (role === "user") {
-      filtered = data.filter(
-        r => r.userEmail?.toLowerCase().trim() === email
-      );
+  useEffect(() => {
+    if (status === "authenticated") {
+      fetchRequests();
     }
+  }, [status]);
 
-    if (role === "caregiver") {
-      filtered = data.filter(
-        r => r.caregiverEmail?.toLowerCase().trim() === email
-      );
+
+  const fetchRequests = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/notification");
+      if (!res.ok) {
+        throw new Error("Failed to fetch notifications");
+      }
+      const data = await res.json();
+      setRequests(data);
+    } catch (err) {
+      console.error(err);
+      Swal.fire("Error", "Failed to load requests", "error");
+    } finally {
+      setLoading(false);
     }
+  };
 
-    setRequests(filtered);
-  } catch (err) {
-    console.error(err);
-    Swal.fire("Error", "Failed to load requests", "error");
-  } finally {
-    setLoading(false);
-  }
-};
+  const pendingOrAcceptedRequests = requests.filter(r => r.status !== 'paid');
 
 
   const handleAction = async (id, action) => {
@@ -83,11 +71,11 @@ const fetchRequests = async () => {
 
       {loading ? (
         <p>Loading requests...</p>
-      ) : requests.length === 0 ? (
+      ) : pendingOrAcceptedRequests.length === 0 ? (
         <p>No requests found.</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {requests.map((r) => (
+          {pendingOrAcceptedRequests.map((r) => (
             <div key={r._id} className="bg-white p-4 rounded-xl shadow">
               <p>
                 <span className="font-semibold">Caregiver:</span>{" "}

@@ -7,7 +7,7 @@ import Swal from "sweetalert2";
 export default function ProfessionalProfileUI({ profile, currentUserEmail }) {
   const [isAvailable, setIsAvailable] = useState(!!profile.available);
   const isApproved = !!profile.approved;
-  const isOwnProfile = profile.email === currentUserEmail;
+  const isOwnProfile = profile.email?.toLowerCase() === currentUserEmail?.toLowerCase();
 
   const handleHire = async () => {
     try {
@@ -48,6 +48,13 @@ export default function ProfessionalProfileUI({ profile, currentUserEmail }) {
   
     return (
     <div className="max-w-7xl mx-auto px-4 py-8">
+
+      {isOwnProfile && (
+        <span className="ml-auto text-sm text-gray-500">
+          This is your profile
+        </span>
+      )}
+
       
       {/* Header */}
       <div className="bg-white rounded-2xl shadow p-6 flex flex-col md:flex-row gap-6">
@@ -74,7 +81,7 @@ export default function ProfessionalProfileUI({ profile, currentUserEmail }) {
               {profile.approved ? "Approved" : "Pending Approval"}
             </span>
 
-            {/* Hire button */}
+            {/* Hire button (only for other users) */}
             {!isOwnProfile && (
               <button
                 onClick={handleHire}
@@ -88,7 +95,7 @@ export default function ProfessionalProfileUI({ profile, currentUserEmail }) {
                 {isAvailable && isApproved ? "Hire" : isApproved ? "Hired" : "Not Approved"}
               </button>
             )}
-          </div>
+                      </div>
 
           <p className="text-gray-500 mt-1">
             {profile.employmentType} • {profile.experience} Years Experience
@@ -179,3 +186,4 @@ function TagList({ items }) {
     </div>
   );
 }
+

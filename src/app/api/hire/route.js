@@ -22,13 +22,16 @@ export async function PATCH(req) {
       );
     }
 
-    const userEmail = token.email;
+    const userEmail = token.email.toLowerCase();
     const userName = token.name;
 
     const professionalsCollection = dbConnect(collections.PROFESSIONALS);
     const hiresCollection = dbConnect(collections.HIRES);
 
-    const caregiver = await professionalsCollection.findOne({ email: caregiverEmail });
+    // Normalize caregiver email for lookup
+    const normalizedCaregiverEmail = caregiverEmail.toLowerCase();
+
+    const caregiver = await professionalsCollection.findOne({ email: normalizedCaregiverEmail });
     if (!caregiver) {
       return Response.json({ success: false, message: "Caregiver not found" }, { status: 404 });
     }
@@ -39,7 +42,7 @@ export async function PATCH(req) {
 
     // Check if there is already a pending hire
     const existingHire = await hiresCollection.findOne({
-      caregiverEmail,
+      caregiverEmail: normalizedCaregiverEmail,
       userEmail,
       accepted: false,
     });
@@ -53,7 +56,7 @@ export async function PATCH(req) {
 
     // Add to hires collection with accepted: false
     await hiresCollection.insertOne({
-      caregiverEmail,
+      caregiverEmail: normalizedCaregiverEmail,
       caregiverName: caregiver.fullName,
       userEmail,
       userName,

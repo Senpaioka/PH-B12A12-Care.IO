@@ -11,26 +11,26 @@ const authOptions = {
     CredentialsProvider({
       name: "Credentials",
       credentials: {},
-    
+
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
           return null;
         }
-    
+
         const result = await loginUser({
           email: credentials.email,
           password: credentials.password,
         });
-    
+
         if (!result.success) {
           // Returning null tells NextAuth: authentication failed
           return null;
         }
-    
+
         const user = result.data;
-    
+
         return {
-          id: user.id,            
+          id: user.id,
           name: user.username,
           email: user.email,
           image: user.photoURL,
@@ -119,14 +119,21 @@ const authOptions = {
       return true;
     },
 
-    
+
     async jwt({ token, user, account }) {
       if (user) {
         token.id = user.id;
         token.role = user.role;
         token.provider = account?.provider;
+      } else if (token?.email) {
+        // Fetch fresh role from DB to handle updates
+        const userCollection = dbConnect(collections.USERS);
+        const dbUser = await userCollection.findOne({ email: token.email });
+        if (dbUser) {
+          token.role = dbUser.role;
+        }
       }
-    
+
       return token;
     },
 
@@ -148,4 +155,4 @@ const authOptions = {
   },
 }
 
-export {authOptions};
+export { authOptions };

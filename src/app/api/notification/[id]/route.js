@@ -1,8 +1,15 @@
 import { ObjectId } from "mongodb";
 import { dbConnect, collections } from "@/db/dbConnect";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/authOptions";
 
 export async function PATCH(req, { params }) {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session) {
+      return Response.json({ success: false, message: "Unauthorized" }, { status: 401 });
+    }
+
     const { id } = await params;
     const { action } = await req.json();
 
@@ -22,6 +29,15 @@ export async function PATCH(req, { params }) {
       return Response.json(
         { success: false, message: "Hire request not found" },
         { status: 404 }
+      );
+    }
+
+    // Authorization: Only the caregiver can assume action
+    const userEmail = session.user.email.toLowerCase();
+    if (hire.caregiverEmail.toLowerCase() !== userEmail) {
+      return Response.json(
+        { success: false, message: "Forbidden" },
+        { status: 403 }
       );
     }
 

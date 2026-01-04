@@ -37,6 +37,7 @@
 import Stripe from "stripe";
 import { dbConnect, collections } from "@/db/dbConnect";
 import { ObjectId } from "mongodb";
+import { sendPaymentConfirmationEmail } from "@/lib/email";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
@@ -79,8 +80,39 @@ export async function GET(req) {
       }
     );
 
-    // 3️⃣ Delete hire so user cannot pay again
-    await hires.deleteOne({ _id: hireObjectId });
+    // 3️⃣ Update hire status to "paid" (instead of deleting)
+    await hires.updateOne(
+      { _id: hireObjectId },
+      {
+        $set: {
+          status: "paid",
+          paidAt: new Date(),
+          updatedAt: new Date(),
+        },
+      }
+    );
+
+    // 4️⃣ Send Confirmation Emails
+    // We do this asynchronously without awaiting to not block the response, 
+    // or we can await if critical. Given this is a background call (webhook-ish style), awaiting is safe.
+
+    // We need some hire details for the email (name, amount, etc)
+    // Fetch the updated hire doc or use metadata if available. 
+    // Metadata can be strings, so better to fetch fresh doc or use what we have.
+    // Let's fetch the fresh hire doc to be sure.
+    const updatedHire = await hires.findOne({ _id: hireObjectId });
+
+    if (updatedHire) {
+      await sendPaymentConfirmationEmail({
+        userEmail: updatedHire.userEmail,
+        userName: updatedHire.userName,
+        caregiverEmail: updatedHire.caregiverEmail,
+        caregiverName: updatedHire.caregiverName,
+        amount: updatedHire.amount, // assuming simple number
+        currency: "USD", // default or fetch from hire if stored
+        date: new Date(),
+      });
+    }
 
     return Response.json({ success: true });
   } catch (err) {

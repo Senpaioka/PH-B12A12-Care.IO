@@ -1,35 +1,32 @@
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/authOptions"; 
 import { dbConnect, collections } from "@/db/dbConnect";
 import ProfessionalProfileUI from "@/components/profile/ProfessionalProfileUI";
 
 export default async function ProfilePage({ searchParams }) {
- 
   const { email } = await searchParams;
 
   if (!email) {
-    return (
-      <div className="text-center py-20 text-gray-500">
-        Email not provided
-      </div>
-    );
+    return <div className="text-center py-20">Email not provided</div>;
   }
 
-  const professionalsCollection = dbConnect(collections.PROFESSIONALS);
+  // Get logged-in user
+  const session = await getServerSession(authOptions);
+  const currentUserEmail = session?.user?.email ?? null;
 
-  const profile = await professionalsCollection.findOne({
+  const professionals = dbConnect(collections.PROFESSIONALS);
+  const profile = await professionals.findOne({
     email: email.toLowerCase(),
   });
 
   if (!profile) {
-    return (
-      <div className="text-center py-20 text-gray-600">
-        Profile not found
-      </div>
-    );
+    return <div className="text-center py-20">Profile not found</div>;
   }
 
   return (
     <ProfessionalProfileUI
       profile={JSON.parse(JSON.stringify(profile))}
+      currentUserEmail={currentUserEmail}
     />
   );
 }

@@ -1,11 +1,18 @@
 import Stripe from "stripe";
 import { dbConnect, collections } from "@/db/dbConnect";
 import { ObjectId } from "mongodb";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/authOptions";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 export async function POST(req) {
   try {
+    const userSession = await getServerSession(authOptions);
+    if (!userSession) {
+      return Response.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { hireId } = await req.json();
 
     if (!hireId) {
@@ -20,6 +27,11 @@ export async function POST(req) {
     const hire = await hires.findOne({ _id: hireObjectId });
     if (!hire) {
       return Response.json({ error: "Hire not found" }, { status: 404 });
+    }
+
+    // Authorization: Only the user who made the request can pay
+    if (hire.userEmail.toLowerCase() !== userSession.user.email.toLowerCase()) {
+      return Response.json({ error: "Forbidden" }, { status: 403 });
     }
 
     // 🔁 Prevent duplicate pending payment
@@ -64,16 +76,16 @@ export async function POST(req) {
 
     // Insert new pending payment
     await payments.insertOne({
-        hireId: hireObjectId,
-        stripeSessionId: session.id,
-        amount,
-        currency,
-        userEmail: hire.userEmail,
-        caregiverEmail: hire.caregiverEmail,
-        status: "pending",
-        createdAt: new Date(),
+      hireId: hireObjectId,
+      stripeSessionId: session.id,
+      amount,
+      currency,
+      userEmail: hire.userEmail,
+      caregiverEmail: hire.caregiverEmail,
+      status: "pending",
+      createdAt: new Date(),
     });
-    
+
 
     return Response.json({ url: session.url });
   } catch (err) {

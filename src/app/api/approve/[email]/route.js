@@ -1,7 +1,19 @@
 import { dbConnect, collections } from "@/db/dbConnect";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/authOptions";
 
 export async function PATCH(req) {
   try {
+    const session = await getServerSession(authOptions);
+
+    // Check if user is authenticated and is an admin
+    if (!session || session.user.role !== "admin") {
+      return Response.json(
+        { success: false, message: "Unauthorized. Admin access required." },
+        { status: 403 }
+      );
+    }
+
     const { email } = await req.json();
 
     if (!email) {

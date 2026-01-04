@@ -123,3 +123,50 @@ export async function POST(req) {
     );
   }
 }
+
+
+
+
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/authOptions"; // adjust path to your NextAuth config
+
+export async function PATCH(req) {
+  try {
+    // Get logged-in user session
+    const session = await getServerSession(authOptions);
+
+    if (!session?.user?.email) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
+    }
+
+    const email = session.user.email.toLowerCase();
+
+    // Connect to professionals collection
+    const professionalsCollection = dbConnect(collections.PROFESSIONALS);
+
+    // Find current professional
+    const professional = await professionalsCollection.findOne({ email });
+
+    if (!professional) {
+      return new Response(JSON.stringify({ error: "Professional not found" }), { status: 404 });
+    }
+
+    // Toggle availability
+    const newAvailability = !professional.available;
+
+    // Update in DB
+    await professionalsCollection.updateOne(
+      { email },
+      { $set: { available: newAvailability, updatedAt: new Date() } }
+    );
+
+    return new Response(
+      JSON.stringify({ success: true, available: newAvailability }),
+      { status: 200 }
+    );
+  } catch (err) {
+    console.error("Toggle availability error:", err);
+    return new Response(JSON.stringify({ error: err.message }), { status: 500 });
+  }
+}
+
