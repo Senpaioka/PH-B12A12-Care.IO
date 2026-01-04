@@ -2,7 +2,7 @@
 
 Care.IO is a modern web application designed to bridge the gap between families and professional caregivers. Whether you need a nanny for your baby, medical assistance for the elderly, or specialized care for recovering individuals, Care.IO ensures a safe, genuine, and seamless experience.
 
-* Preview Link: 
+* Preview Link: https://ph-b12-a12-care-io.vercel.app
 
 ## ✨ Features
 
