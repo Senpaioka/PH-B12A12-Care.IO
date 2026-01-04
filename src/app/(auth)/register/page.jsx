@@ -1,12 +1,10 @@
-import RegisterForm from '@/components/auth/RegisterForm';
+import { Suspense } from "react";
+import RegisterForm from "@/components/auth/RegisterForm";
 
-
-function RegisterPage() {
+export default function RegisterPage() {
   return (
-     <>
-        <RegisterForm></RegisterForm>
-     </>
+    <Suspense fallback={null}>
+      <RegisterForm />
+    </Suspense>
   );
 }
-
-export default RegisterPage;
