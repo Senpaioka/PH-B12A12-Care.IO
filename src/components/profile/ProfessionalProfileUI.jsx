@@ -45,8 +45,8 @@ export default function ProfessionalProfileUI({ profile, currentUserEmail }) {
       });
     }
   };
-  
-    return (
+
+  return (
     <div className="max-w-7xl mx-auto px-4 py-8">
 
       {isOwnProfile && (
@@ -55,7 +55,7 @@ export default function ProfessionalProfileUI({ profile, currentUserEmail }) {
         </span>
       )}
 
-      
+
       {/* Header */}
       <div className="bg-white rounded-2xl shadow p-6 flex flex-col md:flex-row gap-6">
         <div className="relative w-32 h-32 shrink-0">
@@ -72,30 +72,64 @@ export default function ProfessionalProfileUI({ profile, currentUserEmail }) {
             <h1 className="text-2xl font-semibold">{profile.fullName}</h1>
 
             <span
-              className={`px-3 py-1 rounded-full text-sm ${
-                profile.approved
+              className={`px-3 py-1 rounded-full text-sm ${profile.approved
                   ? "bg-green-100 text-green-700"
                   : "bg-yellow-100 text-yellow-700"
-              }`}
+                }`}
             >
               {profile.approved ? "Approved" : "Pending Approval"}
             </span>
 
             {/* Hire button (only for other users) */}
-            {!isOwnProfile && (
+            {!isOwnProfile ? (
               <button
                 onClick={handleHire}
                 disabled={!(isAvailable && isApproved)}
-                className={`ml-auto rounded-lg px-5 py-2 text-white ${
-                  isAvailable && isApproved
+                className={`ml-auto rounded-lg px-5 py-2 text-white ${isAvailable && isApproved
                     ? "bg-primary cursor-pointer"
                     : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                }`}
+                  }`}
               >
                 {isAvailable && isApproved ? "Hire" : isApproved ? "Hired" : "Not Approved"}
               </button>
+            ) : (
+              <button
+                onClick={async () => {
+                  try {
+                    const res = await fetch("/api/professionals", {
+                      method: "PATCH",
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                      setIsAvailable(data.available);
+                      Swal.fire({
+                        icon: "success",
+                        title: "Updated",
+                        text: `You are now ${data.available ? "Available" : "Unavailable"}`,
+                        timer: 1500,
+                        showConfirmButton: false,
+                      });
+                    } else {
+                      throw new Error(data.message || data.error);
+                    }
+                  } catch (err) {
+                    console.error(err);
+                    Swal.fire({
+                      icon: "error",
+                      title: "Error",
+                      text: err.message || "Failed to update availability",
+                    });
+                  }
+                }}
+                className={`ml-auto rounded-lg px-5 py-2 text-white transition-colors cursor-pointer ${isAvailable
+                    ? "bg-red-500 hover:bg-red-600"
+                    : "bg-green-500 hover:bg-green-600"
+                  }`}
+              >
+                {isAvailable ? "Set Unavailable" : "Set Available"}
+              </button>
             )}
-                      </div>
+          </div>
 
           <p className="text-gray-500 mt-1">
             {profile.employmentType} • {profile.experience} Years Experience

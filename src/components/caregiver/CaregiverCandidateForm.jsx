@@ -206,7 +206,7 @@ export default function CaregiverCandidateForm() {
 
                 <button
                   type="button"
-                  className="btn btn-primary"
+                  className="btn bg-gray-900 text-gray-300"
                   onClick={nextStep}
                 >
                   Next
@@ -338,7 +338,7 @@ export default function CaregiverCandidateForm() {
                   >
                     Back
                   </button>
-                  <button type="submit" className="btn btn-primary">
+                  <button type="submit" className="btn bg-gray-900 text-gray-300">
                     Submit Application
                   </button>
                 </div>

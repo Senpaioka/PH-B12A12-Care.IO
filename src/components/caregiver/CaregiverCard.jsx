@@ -71,27 +71,10 @@ export default function CaregiverCard({ caregiver }) {
           ))}
         </div>
 
-        {/* View Details */}
-        {/* {available ? (
-          <Link
-            href={`/profile/${_id}`}
-            className="block mt-4 text-center rounded-lg bg-primary text-white py-2 hover:bg-primary/90 transition"
-          >
-            View Details
-          </Link>
-        ) : (
-          <button
-            disabled
-            className="block w-full mt-4 text-center rounded-lg bg-gray-300 text-gray-500 py-2 cursor-not-allowed"
-          >
-            Not Available
-          </button>
-        )} */}
-
         {available ? (
   <Link
     href={`/profile?email=${encodeURIComponent(caregiver.email)}`}
-    className="block mt-4 text-center rounded-lg bg-primary text-white py-2 hover:bg-primary/90 transition"
+    className="block mt-4 text-center rounded-lg bg-gray-900 text-gray-300 py-2 hover:bg-gray-600 hover:text-white transition"
   >
     View Details
   </Link>
