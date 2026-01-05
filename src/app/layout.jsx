@@ -26,7 +26,7 @@ export default function RootLayout({ children }) {
     <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}>
       <NextAuthProvider>
       <html lang="en">
-        <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <body className={`${geistSans.variable} ${geistMono.variable} antialiased  min-h-screen`}>
           <header className="w-10/12 mx-auto md:p-5">
             <Navbar></Navbar>
           </header>
@@ -44,3 +44,6 @@ export default function RootLayout({ children }) {
     </GoogleOAuthProvider>
   );
 }
+
+
+

@@ -82,10 +82,6 @@ export default function RegisterPage() {
     }
   };
 
-  
-  // const onGoogleLogin = async() => {
-  //   await signIn("google", {callbackUrl})
-  // }
 
   return (
 
@@ -199,7 +195,7 @@ export default function RegisterPage() {
             <div className="form-control mt-6">
               <button
                 type="submit"
-                className="btn btn-primary w-full"
+                className="btn bg-gray-900 text-gray-300 w-full"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? "Creating Account..." : "Register"}

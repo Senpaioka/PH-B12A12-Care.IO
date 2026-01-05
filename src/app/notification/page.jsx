@@ -109,13 +109,13 @@ export default function NotificationPage() {
                 <div className="mt-4 flex gap-2">
                   <button
                     onClick={() => handleAction(r._id, "accept")}
-                    className="bg-green-500 text-white px-4 py-2 rounded-lg"
+                    className="bg-green-500 text-white px-4 py-2 rounded-lg cursor-pointer"
                   >
                     Accept
                   </button>
                   <button
                     onClick={() => handleAction(r._id, "reject")}
-                    className="bg-red-500 text-white px-4 py-2 rounded-lg"
+                    className="bg-red-500 text-white px-4 py-2 rounded-lg cursor-pointer"
                   >
                     Reject
                   </button>
